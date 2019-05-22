@@ -3,6 +3,7 @@ package com.isoft.dao.impl;
 import com.isoft.dao.IUserDAO;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -17,15 +18,20 @@ public class UserDAOImpl implements IUserDAO {
     SqlSessionFactory sessionFactoryBean;
 
     @Override
-    public String login(String uname, String upwd) {
-        SqlSession sqlSession = sessionFactoryBean.openSession(true);
-        String statement = "com.isoft.mapping.userMapper.login";
+    public String login(String uname, String upwd) throws Exception {
+
+        SqlSession sqlSession = sessionFactoryBean.openSession(true);//true  开启事务
+        String statment = "com.isoft.mapping.userMapper.login";
         Map map = new HashMap();
         map.put("uname", uname);
         map.put("upwd", upwd);
-        List<Map<String, Object>> list = sqlSession.selectList(statement, map);
-        System.out.println(uname + "," + upwd);
-        return "success";
+        System.out.println(map);
+        List list = sqlSession.selectList(statment, map);
+        System.out.println(list);
+        if (list != null)
+            return "success";
+        else
+            return "fault";
     }
 
     @Override
@@ -35,12 +41,36 @@ public class UserDAOImpl implements IUserDAO {
         Map map = new HashMap();
         map.put("uname", uname);
         map.put("upwd", upwd);
-        map.put("email",email);
-        int i=sqlSession.insert(statement,map);
-        System.out.println(email);
-       if (i>0)
-           return true;
-       else
-           return false;
+        map.put("email", email);
+        int i = sqlSession.insert(statement, map);
+        if (i > 0)
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public List<Map<String, Object>> findAllUser(int page, int pageSize) {
+        SqlSession sqlSession = sessionFactoryBean.openSession(true);
+        String statement = "com.isoft.mapping.userMapper.findAllUser";
+        Map map = new HashMap();
+        map.put("page", (page-1) * pageSize);
+        map.put("pageSize", pageSize);
+        List<Map<String, Object>> list = sqlSession.selectList(statement, map);
+        return list;
+    }
+
+    @Override
+    public Map<String, Object> findUserCount() {
+        try {
+            SqlSession sqlSession = sessionFactoryBean.openSession(true);
+            String statement = "com.isoft.mapping.userMapper.findUserCount";
+            Map map = sqlSession.selectOne(statement);
+            System.out.println(map);
+            return map;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

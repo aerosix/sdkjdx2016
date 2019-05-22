@@ -1,7 +1,11 @@
 package com.isoft.service;
 
-public interface IUserService {
-        String login(String unmae , String pswd);
-        boolean register(String uname , String upswd , String email);
+import java.util.List;
+import java.util.Map;
 
+public interface IUserService {
+    String login(String uname,String upwd);
+    boolean register(String uname,String upwd,String email);
+    List<Map<String,Object>> findAllUser(int page,int pageSize);
+    Map<String,Object> findUserCount();
 }

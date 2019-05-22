@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="zhuangyu" />
+        <module name="EWS" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="zhuangyu" target="1.8" />
+      <module name="EWS" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
