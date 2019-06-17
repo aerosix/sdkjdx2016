@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>检修日志</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            loadDeviceData();
+        });
+        function loadDeviceData() {
+            var table = layui.table;
+            var util = layui.util;
+            table.render({
+                toolbar: "#toolbar",
+                elem: "#userInfoList",
+                url: "equipment/findAllEquipment.do",
+                title: "用户信息表",
+                id: "userInfoTable",
+                limit: 8,
+                page: true,
+                event: true,
+                size: "md",
+                limits: [10, 20, 50, 100],
+                loading: true,
+                cols: [
+                    [{
+                        field: "username",
+                        title: "工号",
+                        align: "center",
+                        width: 100
+                    },
+                        {
+                            field: "date",
+                            title: "维修日期",
+                            align: "center",
+                            width: 100,
+                        },
+                        {
+                            field: "quiz",
+                            title: "维修设备",
+                            align: "center",
+                            width: 150
+                        },
+                        {
+                            field: "radio",
+                            title: "维修状况",
+                            align: "center",
+                            width: 100,
+                        },
+                        {
+                            field: "text",
+                            title: "备注",
+                            align: "center",
+                            width: 180,
+                        },
+                    ]
+                ]
+            });
+            layui.table.on("toolbar(userTable)", function (rs) {
+                var event = rs.event;
+                if (event == "add") {
+                    layer.open({
+                        type: 1,
+                        title: "添加检修日志",
+                        btn: ["确认添加", "取消"],
+                        content: $("#editUserInfo").html(),
+                        area: ['400px', '350px'],
+                        yes: function (index) {
+                            layer.msg("成功");
+                        },
+                        success:function () {
+                            $("#lbl_title").html("添加检修日志");
+                            layui.use("form",function () {
+                                layui.form.render();
+                            })
+                        }
+                    });
+                }
+                if (event == "delete") {
+                    var list = layui.table.checkStatus("userInfoTable").data;
+                    if (list.length == 0) {
+                        layer.msg("请选择一条数据");
+                    }else
+                    {
+                        layer.confirm("是否删除选中的数据?",{btn:["确定","取消"]},function () {
+                            layer.closeAll();
+                            var arr=new Array();
+                            $.each(list,function (index,row) {
+                                arr[index]=row.id;
+                            });
+                            $.ajax({
+                                url:"user/deleteUserInfoById.do",
+                                data:{"id":arr.join(",").toString()},
+                                method:"post",
+                                success:function (result) {
+                                    if(JSON.parse(result) == "success"){
+                                        layer.msg("删除成功！");
+                                        layui.table.reload("userInfoTable");
+                                    }
+                                    else
+                                        layer.msg("删除失败！");
+
+                                },
+                                error:function () {
+                                    layer.msg("请求服务器失败?");
+                                }
+                            });
+                        })
+                    }
+                }
+            });
+
+        }
+    </script>
+</head>
+<body>
+<div class="layui-elem-quote">
+    检修日志
+</div>
+<script type="text/html" id="toolbar">
+    <button class="layui-btn layui-btn-danger" lay-event="add"><i class="layui-icon">&#xe640</i> 添加检修日志</button>
+    <a href="javascript:void(0)" class="layui-btn layui-btn-warm" lay-event="delete"><span
+            class="layui-icon layui-icon-delete"></span> 删除检修日志</a>
+    <input class="layui-input-block" type="text" placeholder="请输入要查询的信息">
+    <a href="" class="layui-btn layui-btn-warm">
+        <span class="layui-icon layui-icon-search"></span></a>
+</script>
+<table class="layui-table" id="userInfoList" lay-filter="userTable">
+</table>
+<div align="center" id="editUserInfo" style="display: none;width: 300px">
+    <br>
+    <center>
+        <h2 id="lbl_title">修改检修日志</h2>
+    </center>
+    <hr>
+    <form class="layui-form" id="form1">
+        <input type="hidden" id="id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">工号</label>
+            <div class="layui-input-inline">
+                <input type="text" id="username" name="username" lay-verify="username" autocomplete="off"
+                       placeholder="请输入工号" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">日期范围</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="test6" placeholder=" - ">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">维修设备</label>
+            <div class="layui-input-inline">
+                <select name="quiz1">
+                    <option value="">设备类型</option>
+                    <option value="诊断" selected="">诊断设备类</option>
+                    <option value="治疗">治疗设备类</option>
+                    <option value="辅助">辅助设备类</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="quiz2">
+                    <option value="">设备名</option>
+                    <option value="X1">X射线正电子发射断层扫描仪</option>
+                    <option value="C1"> 超声诊断设备</option>
+                    <option value="G1">功能检查设备</option>
+                    <option value="N1">内窥镜手术器械控制系统</option>
+                    <option value="H1"> 核内照射治疗设备</option>
+                    <option value="S1"> 实验诊断设备</option>
+                    <option value="H2"> 核胶体治疗装备</option>
+                    <option value="Z1"> 正电子发射型磁共振成像系统</option>
+                    <option value="B1">病房护理设备</option>
+                    <option value="S1"> 手术设备</option>
+                    <option value="Z2"> 重离子放射治疗系统</option>
+                    <option value="D1"> 电疗治疗设备</option>
+                    <option value="C2"> 超声治疗设备</option>
+                    <option value="J1"> 激光设备—医用激光发生器</option>
+                    <option value="T1"> 透析治疗设备</option>
+                    <option value="J2">  急救设备</option>
+                    <option value="Z3">  质子放射治疗系统</option>
+                    <option value="H3"> 核敷贴治疗</option>
+                    <option value="X1"> 消毒灭菌设备</option>
+                    <option value="Z4"> 制冷设备</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="quiz3">
+                    <option value="">序列号</option>
+                    <option value="A0101">A0101</option>
+                    <option value="B1050">B1050</option>
+                    <option value="F0382">F0382</option>
+                    <option value="I1325">I1325</option>
+                    <option value="N6572">N6572</option>
+                    <option value="S5987">S5987</option>
+                    <option value="N8412">N8412</option>
+                    <option value="C4551">C4551</option>
+                    <option value="H0548">H0548</option>
+                    <option value="E1000">E1000</option>
+                    <option value="G1549">G1549</option>
+                    <option value="L1453">L1453</option>
+                    <option value="L4458">L4458</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="layui3.4/layui.all.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        laydate.render({
+            elem: '#date1'
+        });
+
+</script>
+</body>
+</html>

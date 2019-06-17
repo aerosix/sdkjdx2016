@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.isoft.mapping.EquipmentMapper">
+    <select id="findAllEquipment" parameterType="map" resultType="map">
+        select * from tb_equipment limit #{page},#{pageSize}
+    </select>
+    <select id="fineEquipmentCount" resultType="map">
+        SELECT count(*) as `count` from tb_equipment;
+    </select>
+    <insert id="insertEquipmentInfo" parameterType="map">
+        insert into tb_equipment(id,serialNumber,ename,etype,estatus,productionDate,FirstUseTime,examinationCycle,LastRepairTime)
+        values(null,#{serialNumber},#{enmae},#{etype},#{estatus},now(),now(),#{examinationCycle},now());
+    </insert>
+    <delete id="deleteEquipmentInfoById" parameterType="int">
+        delete from tb_equipment where id=#{id}
+    </delete>
+    <update id="updateEquipmentInfo" parameterType="string">
+        update tb_equipment set #{serialNumber},ename=#{ename},etype=#{etype},estatus=#{estatus} where id=#{id}
+    </update>
+    <select id="equipmentTotal" resultType="map">
+        select
+         case
+            when etype ='诊断设备类' then '诊断设备类'
+            when etype ='治疗设备类'  then '治疗设备类'
+            when etype ='辅助设备类' then '辅助设备类'
+            end as etype
+            ,count(*) as count
+            from tb_equipment group by etype;
+    </select>
+</mapper>

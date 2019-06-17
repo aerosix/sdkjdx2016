@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>医疗设备预警系统</title>
-    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <link rel="stylesheet" href="layui/css/layui.css"/>
     <link rel="stylesheet" href="css/vcode.css"/>
     <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
-    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+    <script type="text/javascript" src="layui/layui.all.js"></script>
     <script type="text/javascript" src="js/vcode.js"></script>
     <script type="text/javascript">
         $(function () {
@@ -70,7 +70,9 @@
                 },
                 method: "post",
                 success: function (result) {//这是回调函数
-                    layer.alert("登录" + result);
+                    //layer.alert("登录" + result);
+                    sessionStorage.setItem("uname",uname);
+                    // alert(uname);
                     window.location.href="admin.html";
                 },
                 error: function () {
@@ -169,7 +171,7 @@
 </center>
 <div class="layui-footer" align="center">
     <br>
-    &copy;2018-2019 融创软通科技股份
+    &copy;2019/5/27-2019/5/30 shuaideyipi
 </div>
 </body>
 </html>

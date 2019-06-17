@@ -1,7 +1,6 @@
 package com.isoft.action;
 
 import com.isoft.service.IUserService;
-import com.isoft.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,14 +67,46 @@ public class UserAction {
         map.put("countList",countlist);
         return map;
     }
-
+    /*@RequestMapping("/insertUserInfo")
+    @ResponseBody
+    public  String insertUserInfo(String uname,String upwd,String email){
+        boolean temp = userService.insert(uname, upwd, email);
+        if (temp)
+            return "success";
+        else
+            return "fault";
+    }*/
     @RequestMapping("/deleteUserInfoById.do")
     @ResponseBody
-    public String deleteUserInfoById(int id) {
+    public String deleteUserInfoById(String id) {
+        System.out.println(id);
         String result = "success";
-        int i = userService.deleteUserInfoById(id);
+        int i=0;
+        try{
+            String  [] arr= id.split(",");
+            for (String index:arr) {
+                i= userService.deleteUserInfoById(Integer.parseInt(index));
+                System.out.println("正在删除第"+index+"条");
+            }
+        }catch ( Exception e){
+            i=0;
+            e.printStackTrace();
+        }
         if (i == 0)
             result = "fault";
         return result;//返回JSON格式数据，但是不能转换，因为找不到JSON消息转换器
     }
+
+    @RequestMapping("/updateUserInfo.do")
+    @ResponseBody
+    public String updateUserInfo(String uname, String email, String role) {
+        /*硬编码*/
+        boolean temp = userService.register(uname,email, role);
+        if (temp)
+            return "success";
+        else
+            return "fault";
+
+    }
 }
+
