@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.isoft.mapping.device">
+    <select id="register" parameterType="map" resultType="map">
+    INSERT INTO tb_device (peopleId,deviceData,password,etype,ename,serialNumber,device,log)
+    values(null,#{peopleId},#{deviceData},#{password},#{etype},#{ename},#{serialNumber},#{deivce},#{log});
+    </select>
+    <select id="registerID" parameterType="map" resultType="map">
+    INSERT INTO tb_device (peopleId)
+    values(#{peopleId},'employee');
+    </select>
+</mapper>

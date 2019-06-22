@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>预警系统后台管理</title>
+    <link rel="stylesheet" href="layui/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            if(sessionStorage.getItem("uname")==null){
+                layer.msg("非法用户，请登录!");
+                setInterval("window.location.href=\"index.html\"",3000);
+            }else{
+                var uname=sessionStorage.getItem("uname");
+                $("#loginName").html(uname);
+            }
+
+        });
+        function loadUserManagerPage() {
+            $("#mainFrame").load("userManager.html");
+        }
+        function loadAnalysisPage() {
+            $("#mainFrame").load("analysis.html");
+        }
+        function loadEquipmentManagerPage() {
+            $("#mainFrame").load("equipmentManager.html");
+        }
+        function loadEquipmentAnalysisPage() {
+            $("#mainFrame").load("equipmentAnalysis.html");
+        }
+        function loadDeviceManagerPage() {
+            $("#mainFrame").load("deviceManager.html");
+        }
+        function loadDevicePage() {
+            $("#mainFrame").load("device.html");
+        }
+        function loadJurisdictionPage() {
+            $("#mainFrame").load("jurisdiction.html");
+        }
+        function loadPersonal() {
+            $("#mainFrame").load("personalcenter.html");
+        }
+        function loadChange(){
+            $("#mainFrame").load("changepassword.html");
+        }
+        function exit() {
+            layer.confirm("是否真的要退出系统?",{title:"退出提示",btn:["残忍离开","继续使用"]},function (index) {
+                sessionStorage.clear();
+                window.location.href="index.html";
+
+            })
+        }
+    </script>
+
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">医疗设备预警系统管理</div>
+        <!--  &lt;!&ndash; 头部区域（可配合layui已有的水平导航） &ndash;&gt;
+          <ul class="layui-nav layui-layout-left">
+              <li class="layui-nav-item"><a href="">控制台</a></li>
+              <li class="layui-nav-item"><a href="">商品管理</a></li>
+              <li class="layui-nav-item"><a href="">用户</a></li>
+              <li class="layui-nav-item">
+                  <a href="javascript:;">其它系统</a>
+                  <dl class="layui-nav-child">
+                      <dd><a href="">邮件管理</a></dd>
+                      <dd><a href="">消息管理</a></dd>
+                      <dd><a href="">授权管理</a></dd>
+                  </dl>
+              </li>
+          </ul>-->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <label id="loginName"></label>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:loadPersonal();"><span class="layui-icon layui-icon-auz"></span> 个人中心</a></dd>
+                    <dd><a href="javascript:loadChange();"><span class="layui-icon layui-icon-password"></span> 修改密码</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="javaScript:exit()">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;"><span class="layui-icon layui-icon-user"></span> 用户管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadUserManagerPage();"><span class="layui-icon layui-icon-group"></span> 用户管理</a></dd>
+                        <dd><a href="javascript:loadAnalysisPage();"><span class="layui-icon layui-icon-chart-screen"></span> 统计分析</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;"><span class="layui-icon layui-icon-app"></span> 医疗设备管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadEquipmentManagerPage();"><span class="layui-icon layui-icon-engine"></span> 设备管理</a></dd>
+                        <dd><a href="javascript:loadEquipmentAnalysisPage();"> <span class="layui-icon layui-icon-chart-screen"></span>统计分析</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;"><span class="layui-icon layui-icon-user"></span> 检修管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadDeviceManagerPage();"><span class="layui-icon layui-icon-user"></span> 设备检修</a></dd>
+                        <dd><a href="javascript:loadDevicePage();"><span class="layui-icon layui-icon-user"></span> 检修日志</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;"><span class="layui-icon layui-icon-user"></span> 系统管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadJurisdictionPage();"> <span class="layui-icon layui-icon-user"></span> 权限分配</a></dd>
+                        <dd><a href="javascript:exit();"><span class="layui-icon layui-icon-user"></span> 注销系统</a></dd>
+                    </dl>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+            <div id="mainFrame" style="padding: 15px;" >
+                <div id="welcome" style="font-size: 100px"><center>welcome</center></div>
+            </div>
+    </div>
+            <!--<div class="layui-body">
+            <div class="layui-carousel" id="test10">
+                <div  carousel-item="我们shuaideyipi">
+                    &lt;!&ndash;<div><img src="layui/images/admin/1.jpg/"></div>&ndash;&gt;
+                    <div><img src="layui/images/admin/2.jpg"></div>
+                    <div><img src="layui/images/admin/3.jpg"></div>
+                    <div><img src="layui/images/admin/4.jpg"></div>
+                </div>
+            </div>
+        </center>
+    </div>-->
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        &copy;2019/5/27-2019/5/30 shuaideyipi
+    </div>
+</div>
+<script src="layui/layui.all.js"></script>
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+</script>
+</body>
+</html>
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>预警系统后台管理</title>
+    &lt;!&ndash;<meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">&ndash;&gt;
+    <link rel="stylesheet" href="layui/css/layui.css" />&lt;!&ndash;media="all"&ndash;&gt;
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    &lt;!&ndash;<script src="layui/layui.all.js"></script>&ndash;&gt;
+&lt;!&ndash;    <script>
+        //JavaScript代码区域
+        layui.use('element', function(){
+            var element = layui.element;
+
+        });
+    </script>&ndash;&gt;
+    <script type="text/javascript">
+        $(function () {
+            if(sessionStorage.getItem("uname")==null){
+                layer.msg("非法用户，请登录!");
+                setInterval("window.location.href=\"index.html\"",3000);
+            }else{
+                var uname=sessionStorage.getItem("uname");
+                $("#loginName").html(uname);
+            }
+
+        });
+        function loadUserManagerPage() {
+            $("#mainFrame").load("userManager.html");
+        }
+        function loadAnalysisPage() {
+            $("#mainFrame").load("analysis.html");
+        }
+        function loadEquipmentManagerPage() {
+            $("#mainFrame").load("equipmentManager.html");
+        }
+        function loadEquipmentAnalysisPage() {
+            $("#mainFrame").load("equipmentAnalysis.html");
+        }
+        function loadDeviceManagerPage() {
+            $("#mainFrame").load("deviceManager.html");
+        }
+        function loadDevicePage() {
+            $("#mainFrame").load("device.html");
+        }
+        function loadJurisdictionPage() {
+            $("#mainFrame").load("jurisdiction.html");
+        }
+        function loadpersonal() {
+            $("#mainFrame").load("personalcenter.html");
+        }
+        function loadchange(){
+            $("#mainFrame").load("changepassword.html");
+        }
+        function exit() {
+            layer.confirm("是否真的要退出系统?",{title:"退出提示",btn:["残忍离开","继续使用"]},function (index) {
+                sessionStorage.clear();
+                window.location.href="index.html";
+
+            })
+        }
+    </script>
+
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">医疗设备预警系统管理</div>
+        &lt;!&ndash;  &lt;!&ndash; 头部区域（可配合layui已有的水平导航） &ndash;&gt;
+          <ul class="layui-nav layui-layout-left">
+              <li class="layui-nav-item"><a href="">控制台</a></li>
+              <li class="layui-nav-item"><a href="">商品管理</a></li>
+              <li class="layui-nav-item"><a href="">用户</a></li>
+              <li class="layui-nav-item">
+                  <a href="javascript:;">其它系统</a>
+                  <dl class="layui-nav-child">
+                      <dd><a href="">邮件管理</a></dd>
+                      <dd><a href="">消息管理</a></dd>
+                      <dd><a href="">授权管理</a></dd>
+                  </dl>
+              </li>
+          </ul>&ndash;&gt;
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    <label id="loginName"></label>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:loadpersonal();"><span class="layui-icon layui-icon-auz"></span> 个人中心</a></dd>
+                    <dd><a href="javascript:loadchange();"><span class="layui-icon layui-icon-password"></span> 修改密码</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="javaScript:exit()">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            &lt;!&ndash; 左侧导航区域（可配合layui已有的垂直导航） &ndash;&gt;
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;"><span class="layui-icon layui-icon-user"></span> 用户管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadUserManagerPage();"><span class="layui-icon layui-icon-group"></span> 用户管理</a></dd>
+                        <dd><a href="javascript:loadAnalysisPage();"><span class="layui-icon layui-icon-chart-screen"></span> 统计分析</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;"><span class="layui-icon layui-icon-app"></span> 医疗设备管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadEquipmentManagerPage();"><span class="layui-icon layui-icon-engine"></span> 设备管理</a></dd>
+                        <dd><a href="javascript:loadEquipmentAnalysisPage();"> <span class="layui-icon layui-icon-chart-screen"></span>统计分析</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;"><span class="layui-icon layui-icon-user"></span> 检修管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadDeviceManagerPage();"><span class="layui-icon layui-icon-user"></span> 设备检修</a></dd>
+                        <dd><a href="javascript:loadDevicePage();"><span class="layui-icon layui-icon-user"></span> 检修日志</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;"><span class="layui-icon layui-icon-user"></span> 系统管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:loadJurisdictionPage();"> <span class="layui-icon layui-icon-user"></span> 权限分配</a></dd>
+                        <dd><a href="javascript:exit();"><span class="layui-icon layui-icon-user"></span> 注销系统</a></dd>
+                    </dl>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        &lt;!&ndash;内容主体区域&ndash;&gt;
+        <center>
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+                <legend>我们shuaideyipi</legend>
+            </fieldset>
+
+            <div class="layui-carousel" id="test10">
+                <div  carousel-item="我们shuaideyipi">
+                    &lt;!&ndash;<div><img src="layui/images/admin/1.jpg/"></div>&ndash;&gt;
+                    <div><img src="layui/images/admin/2.jpg"></div>
+                    <div><img src="layui/images/admin/3.jpg"></div>
+                    <div><img src="layui/images/admin/4.jpg"></div>
+                </div>
+            </div>
+        </center>
+    </div>
+    <script src="layui/layui.js" charset="utf-8"></script>
+    <script>
+    layui.use(['carousel', 'form'], function(){
+        var carousel = layui.carousel
+            ,form = layui.form;
+
+        /*//改变下时间间隔、动画类型、高度
+        carousel.render({
+            elem: '#test2'
+            ,interval: 1800
+            ,anim: 'fade'
+            ,height: '120px'
+        });*/
+
+        //图片轮播
+        carousel.render({
+            elem: '#test10'
+            ,width: '1000px'
+            ,height: '400px'
+            ,interval: 5000
+            ,
+        });
+        /*carousel.img({width:'100%',height:'100%'});*/
+
+        //事件
+        carousel.on('change(test4)', function(res){
+            console.log(res)
+        });
+
+        var $ = layui.$, active = {
+            set: function(othis){
+                var THIS = 'layui-bg-normal'
+                    ,key = othis.data('key')
+                    ,options = {};
+
+                othis.css('background-color', '#5FB878').siblings().removeAttr('style');
+                options[key] = othis.data('value');
+                ins3.reload(options);
+            }
+        };
+
+        //监听开关
+        form.on('switch(autoplay)', function(){
+            ins3.reload({
+                autoplay: this.checked
+            });
+        });
+
+        $('.demoSet').on('keyup', function(){
+            var value = this.value
+                ,options = {};
+            if(!/^\d+$/.test(value)) return;
+
+            options[this.name] = value;
+            ins3.reload(options);
+        });
+
+        /*//其它示例
+        $('.demoTest .layui-btn').on('click', function(){
+            var othis = $(this), type = othis.data('type');
+            active[type] ? active[type].call(this, othis) : '';
+        });*/
+    });
+    </script>
+    <div class="layui-footer">
+        &lt;!&ndash; 底部固定区域 &ndash;&gt;
+        &copy;2019/5/27-2019/5/30 shuaideyipi
+    </div>
+</div>
+
+</body>
+</html>-->

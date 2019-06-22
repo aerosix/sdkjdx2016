@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>医疗设备管理</title>
+    <link rel="stylesheet" href="layui/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui/layui.all.js"></script>
+    <script type="text/javascript">
+    $(function () {
+    loadEquipmentData();
+    });
+    function openEquipmentInfoEdit(id,serialNumber,ename,etype,estatus,productionDate,examinationCycle) {
+        layer.open({
+            type: 1,
+            title: "修改设备信息",
+            btn: ["确认修改", "取消"],
+            content: $("#editEquipmentInfo").html(),
+            area: ['400px', '350px'],
+            yes: function (index) {
+                layer.msg("修改成功");
+            }, success: function () {
+                layui.use("form", function () {
+                    layui.form.render();
+                });
+                $("#ename").val(ename);
+                $("#lbl_title").html("修改设备信息");
+            }
+        });
+    }
+        function deleteEquipmentInfoById(id){
+            layer.confirm("是否真的要删除本记录?", {icon: 3, title: "警告"}, function (index){
+                layer.closeAll();
+                $.ajax({
+                    url: "equipment/deleteEquipmentInfoById.do",
+                    method: "post",
+                    data: {"id": id},
+                    success: function (result) {
+                        //alert(result);
+                        if (JSON.parse(result) == "success") {
+                            //  $("#EquipmentInfoList").reload();
+
+                            layer.msg("删除成功!");
+                            layui.table.reload("EquipmentInfoTable");
+                        } else {
+                            layer.msg("删除失败!");
+                        }
+
+                    },
+                    error: function () {
+                        layui.msg("请求服务器失败!");
+                    }
+            });
+        });
+    }
+    function loadEquipmentData() {
+        var table = layui.table;
+        var util = layui.util;
+        table.render({
+            toolbar: "#toolbar",
+            elem: "#EquipmentInfoList",
+            url: "equipment/findAllEquipment.do",
+            title: "设备信息表",
+            id: "EquipmentInfoTable",
+            limit: 10,
+            page: true,
+            event: true,
+            size: "md",
+            limits: [10, 20, 50, 100],
+            loading: true,
+            cols:[
+                [{
+                    field: "id",
+                    title: "ID",
+                    type: "checkbox",
+                },{
+                    field: "id",
+                    title: "ID",
+                    type: "numbers",
+                    width: 20,
+                }, {
+                    field: "serialNumber",
+                    title: "序列号",
+                    width: 80,
+                    edit:true
+                }, {
+                    field: "ename",
+                    title: "设备名",
+                    align: "center",
+                    width: 100,
+                    edit:true
+                },{
+                    field: "etype",
+                    title: "设备类型",
+                    align: "center",
+                    width: 100,
+                    edit:true,
+                    templet: function (row) {
+                        if (row.etype == '诊断设备类')
+                            return "诊断设备类";
+                        if (row.etype == '治疗设备类')
+                            return "治疗设备类";
+                        if (row.etype == '辅助设备类')
+                            return "辅助设备类";
+                    }
+                }, {
+                    field: "estatus",
+                    title: "设备状态",
+                    align: "center",
+                    width: 100,
+                    edit:true,
+                    templet: function (row) {
+                        if (row.estatus == 'Nolmal')
+                            return "正常";
+                        if (row.estatus == 'Malfunction')
+                            return "故障";
+                    }
+                }, {
+                        field: "productionTime",
+                        title: "生产时间",
+                        align: "center",
+                        width: 140,
+                    edit:true,
+                        templet: function (row) {
+                            return util.toDateString(row.productionTime, "yyyy-MM-dd");
+                        }
+                    },{
+                        field: "FirstUseTime",
+                        title: "首次使用时间",
+                        align: "center",
+                        width: 140,
+                    edit:true,
+                        templet: function (row) {
+                            return util.toDateString(row.FirstUseTime, "yyyy-MM-dd");
+                        }
+                    },{
+                        field: "examinationCycle",
+                        title: "检修周期",
+                        align: "center",
+                        width: 100,
+                    edit:true,
+                    },{
+                    field: "LastRepairTime",
+                    title: "最后检修时间",
+                    align: "center",
+                    width: 180,
+                    edit:true,
+                    templet: function (row) {
+                        return util.toDateString(row.LastRepairTime, "yyyy-MM-dd HH:mm:ss");
+                    }
+                }, {
+                    field: "id",
+                    title: "操作",
+                    align: "center",
+                    width: 100,
+                    templet: function (row) {
+                        /* var arr = new Array();
+                        arr[0] = row.id;
+                        arr[1] = row.serialNumber;
+                        arr[2] = row.ename;
+                        arr[3] = row.etype;
+                        arr[4] = row.estatus;*/
+                        /*var edit = '<a href="javascript:editEquipmentInfo(' + row.id + ",'" + row.serialNumber + "','" + row.ename + "','" + row.etype + "','" + row.estatus + "','" + row.productionDate + "','" + row.examinationCycle + '\');"   title="修改">' +
+                            "<span style='font-size: 25px;color:blue' class='layui-icon layui-icon-util'></span></a>"*/
+                        var del = '<a href="javaScript:deleteEquipmentInfoById(' + row.id + ')"  title="删除">' +
+                            "<span style='font-size: 25px;color: red' class='layui-icon layui-icon-delete'></span></a>"
+                        return /*edit + "|" + */del;
+                    }
+                }
+
+                ]
+            ]
+        });
+        layui.table.on("toolbar(EquipmentTable)", function (rs) {
+            var event = rs.event;
+            if (event == "add"){
+                layer.open({
+                    type: 1,
+                    title: "添加设备信息",
+                    btn: ["确认添加", "取消"],
+                    content: $("#editEquipmentInfo").html(),
+                    area: ['400px', '350px'],
+                    yes: function (index) {
+                        layer.msg("设备添加成功");
+                },success:function () {
+                        $("#lbl_title").html("添加设备信息");
+                        layui.use("form", function () {
+                            layui.form.render();
+                        })
+                    }
+                });
+            }
+
+        if (event == "delete"){
+            var list = layui.table.checkStatus("EquipmentInfoTable").data;
+            if (list.length == 0){
+                layer.msg("请选择一条数据");
+            }else{
+                layer.confirm("是否删除选中的数据?",{btn:["确定","取消"]},function () {
+                    layer.closeAll();
+                    var arr=new Array();
+                    $.each(list,function (index,row) {
+                        arr[index]=row.id;
+                    });
+                    $.ajax({
+                        url:"equipment/deleteEquipmentInfoById.do",
+                        data:{"id":arr.join(",").toString()},
+                        method:"post",
+                        success:function (result) {
+                            if(JSON.parse(result) == "success"){
+                                layer.msg("删除成功！");
+                                layui.table.reload("equipmentInfoTable");
+                            }
+                            else
+                                layer.msg("删除失败！");
+
+                        },
+                        error:function () {
+                            layer.msg("请求服务器失败?");
+                        }
+                    });
+                })
+            }
+        }
+    });
+
+    }
+    </script>
+</head>
+<body>
+<div class="layui-elem-quote">
+    设备管理功能
+</div>
+<script type="text/html" id="toolbar">
+    <button class="layui-btn layui-btn-danger" lay-event="add"><i class="layui-icon">&#xe640</i> 添加设备</button>
+    <a href="javascript:void(0)" class="layui-btn layui-btn-warm" lay-event="delete"><span class="layui-icon layui-icon-delete"></span> 删除设备</a>
+    <input class="layui-input-block" type="text" placeholder="请输入要查询的信息">
+    <a href="" class="layui-btn layui-btn-warm">
+        <span class="layui-icon layui-icon-search"></span></a>
+</script>
+<table class="layui-table" id="EquipmentInfoList" lay-filter="EquipmentTable">
+</table>
+
+    <div align="center" id="editEquipmentInfo" style="display: none;width: 800px">
+        <br>
+    <center>
+        <h2 id="lb2_title">添加设备信息</h2>
+    </center>
+        <hr>
+        <form class="layui-form" id="form2">
+            <input type="hidden" id="id">
+            <div class="layui-form-item">
+                <label class="layui-form-label">序列号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="serialNumber" name="serialNumber" lay-verify="serialNumber" autocomplete="off"
+                           placeholder="请输入设备序列号" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">设备名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="ename" name="ename" lay-verify="ename" autocomplete="off"
+                           placeholder="请输入设备名称" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">设备类型</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="etype" name="etype" lay-verify="etype" autocomplete="off"
+                           placeholder="请输入设备类型" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                    <label class="layui-form-label">设备状态</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="estatus" name="estatus" lay-verify="estatus" autocomplete="off"
+                               placeholder="请输入设备状态" class="layui-input">
+                    </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">生产日期</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="productionDate" name="productionDate" lay-verify="productionDate" autocomplete="off"
+                           placeholder="请输入设备生产日期" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">检修周期</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="examinationCycle" name="examinationCycle" lay-verify="examinationCycle" autocomplete="off"
+                           placeholder="请输入设备检修周期" class="layui-input">
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

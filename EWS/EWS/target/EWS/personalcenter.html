@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            loadUserData();
+        });
+
+        function openUserInfoEdit(id, uname, role, email) {
+            /*            sessionStorage.setItem("id",id);
+                        sessionStorage.setItem("uname",uname);
+                        sessionStorage.setItem("role",role);
+                        sessionStorage.setItem("email",email);*/
+            layer.open({
+                type: 1,
+                title: "修改用户信息",
+                btn: ["确认修改", "取消"],
+                content: $("#editUserInfo").html(),
+                area: ['400px', '350px'],
+                yes: function (index) {
+                    layer.msg("test");
+                },
+                success: function () {
+
+                    layui.use("form",function () {
+                        layui.form.render();
+                    });
+                    $("#uname").val(uname);
+                    $("#lbl_title").html("修改用户信息");
+                }
+
+            });
+            //给文本框赋值
+
+
+        }
+
+
+        // function deleteUserInfoById(id) {
+        //     layer.confirm("是否真的要删除本记录?", {icon: 3, title: "警告"}, function (index) {
+        //         layer.closeAll();
+        //         $.ajax({
+        //             url: "user/deleteUserInfoById.do",
+        //             method: "post",
+        //             data: {"id": id},
+        //             success: function (result) {
+        //                 //alert(result);
+        //                 if (JSON.parse(result) == "success") {
+        //                     //  $("#userInfoList").reload();
+        //
+        //                     layer.msg("删除成功!");
+        //                     layui.table.reload("userInfoTable");
+        //                 } else {
+        //                     layer.msg("删除失败!");
+        //                 }
+        //
+        //             },
+        //             error: function () {
+        //                 layui.msg("请求服务器失败!");
+        //             }
+        //         });
+        //
+        //     });
+        // }
+
+        function loadUserData() {
+            var table = layui.table;
+            var util = layui.util;
+            table.render({
+                toolbar: "#toolbar",
+                elem: "#userInfoList",
+                url: "user/findAllUser.do",
+                title: "用户信息表",
+                id: "userInfoTable",
+                limit: 8,
+                page: true,
+                event: true,
+                size: "md",
+                limits: [10, 20, 50, 100],
+                loading: true,
+                cols: [
+                    [{
+                        field: "id",
+                        title: "ID",
+                        type: "checkbox"
+                    },
+                        {
+                            field: "id",
+                            title: "ID",
+                            type: "numbers",
+                            width: 20
+                        },
+                        {
+                            field: "uname",
+                            title: "用户名",
+                            align: "center",
+                            width: 100
+                        },
+                        {
+                            field: "role",
+                            title: "角色",
+                            align: "center",
+                            width: 100,
+                            templet: function (row) {
+                                if (row.role == 'admin')
+                                    return "管理员";
+                                if (row.role == 'checker')
+                                    return "检修员";
+                                if (row.role == 'employee')
+                                    return "普通职员";
+                            }
+                        },
+                        {
+                            field: "email",
+                            title: "邮箱",
+                            align: "center",
+                            width: 150
+                        },
+                        {
+                            field: "registerTime",
+                            title: "注册时间",
+                            align: "center",
+                            width: 180,
+                            templet: function (row) {
+                                return util.toDateString(row.registerTime, "yyyy-MM-dd HH:mm:ss");
+                            }
+                        },
+                        {
+                            field: "lastLoginTime",
+                            title: "最后一次登录时间",
+                            align: "center",
+                            width: 180,
+                            templet: function (row) {
+                                return util.toDateString(row.lastLoginTime, "yyyy-MM-dd HH:mm:ss");
+                            }
+                        },
+                        {
+                            field: "id",
+                            title: "操作",
+                            align: "center",
+                            width: 100,
+                            templet: function (row) {
+                                /* var arr = new Array();
+                                arr[0] = row.id;
+                                arr[1] = row.uname;
+                                arr[2] = row.email;
+                                arr[3] = row.role;*/
+                                var edit = '<a href="javascript:openUserInfoEdit(' + row.id + ",'" + row.uname + "','" + row.role + "','" + row.email + '\');"   title="编辑">' +
+                                    "<span style='font-size: 25px;color:blue' class='layui-icon layui-icon-util'></span></a>"
+                                var del = '<a href="javaScript:deleteUserInfoById(' + row.id + ')"  title="删除">' +
+                                    "<span style='font-size: 25px;color: red' class='layui-icon layui-icon-delete'></span></a>"
+                                return edit + "|" + del;
+                            }
+                        }
+                    ]
+                ]
+            });
+            layui.table.on("toolbar(userTable)", function (rs) {
+                var event = rs.event;
+                if (event == "add") {
+                    layer.open({
+                        type: 1,
+                        title: "添加用户信息",
+                        btn: ["确认添加", "取消"],
+                        content: $("#editUserInfo").html(),
+                        area: ['400px', '350px'],
+                        yes: function (index) {
+                            layer.msg("test");
+                        },
+                        success:function () {
+                            $("#lbl_title").html("添加用户信息");
+                            layui.use("form",function () {
+                                layui.form.render();
+                            })
+                        }
+                    });
+                }
+                if (event == "delete") {
+                    var list = layui.table.checkStatus("userInfoTable").data;
+                    if (list.length == 0) {
+                        layer.msg("请选择一条数据");
+                    }else
+                    {
+                        layer.confirm("是否删除选中的数据?",{btn:["确定","取消"]},function () {
+                            layer.closeAll();
+                            var arr=new Array();
+                            $.each(list,function (index,row) {
+                                arr[index]=row.id;
+                            });
+                            $.ajax({
+                                url:"user/deleteUserInfoById.do",
+                                data:{"id":arr.join(",").toString()},
+                                method:"post",
+                                success:function (result) {
+                                    if(JSON.parse(result) == "success"){
+                                        layer.msg("删除成功！");
+                                        layui.table.reload("userInfoTable");
+                                    }
+                                    else
+                                        layer.msg("删除失败！");
+
+                                },
+                                error:function () {
+                                    layer.msg("请求服务器失败?");
+                                }
+                            });
+                        })
+                    }
+                }
+            });
+
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">设置我的资料</div>
+                <div class="layui-card-body" pad15>
+
+                    <div class="layui-form" lay-filter="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">我的角色</label>
+                            <div class="layui-input-inline">
+                                <select name="role" lay-verify="">
+                                    <option value="1" selected>管理员</option>
+                                    <option value="2" disabled>检修员</option>
+                                    <option value="3" disabled>普通员工</option>
+                                </select>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">当前角色不可更改为其它角色</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="username" value="lk" readonly class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">不可修改。一般用于后台登入名</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">昵称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="nickname" value="" lay-verify="nickname" autocomplete="off" placeholder="请输入昵称" class="layui-input">
+                            </div>
+                        </div>
+<!--                        <div class="layui-form-item">-->
+<!--                            <label class="layui-form-label">性别</label>-->
+<!--                            <div class="layui-input-block">-->
+<!--                                <input type="radio" name="sex" value="男" title="男">-->
+<!--                                <input type="radio" name="sex" value="女" title="女">-->
+<!--                            </div>-->
+<!--                        </div>-->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">性别</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="sex" value="男" title="男" checked="">
+                                <input type="radio" name="sex" value="女" title="女">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">头像</label>
+                            <div class="layui-input-inline">
+                                <input name="avatar" lay-verify="required" id="LAY_avatarSrc" value="" class="layui-input">
+                            </div>
+                            <div class="layui-upload">
+                                <button type="button" class="layui-btn" id="test1">上传图片</button>
+                                <div class="layui-upload-list">
+                                    <img class="layui-upload-img" id="demo1">
+                                    <p id="demoText"></p>
+                                </div>
+                            </div>
+<!--                            <div class="layui-input-inline layui-btn-container" style="width: auto;">-->
+<!--                                <button type="button" class="layui-btn layui-btn-primary" id="LAY_avatarUpload">-->
+<!--                                    <i class="layui-icon">&#xe67c;</i>上传图片-->
+<!--                                </button>-->
+<!--                                <button class="layui-btn layui-btn-primary" layadmin-event="avartatPreview">查看图片</button >-->
+<!--                            </div>-->
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">手机</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="cellphone" value="" lay-verify="phone" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">邮箱</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="email" value="" lay-verify="email" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">备注</label>
+                            <div class="layui-input-block">
+                                <textarea name="remarks" placeholder="请输入内容" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="setmyinfo">确认修改</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重新填写</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
